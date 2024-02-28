@@ -62,7 +62,7 @@ Before moving on:
 ```yaml
 # PUT _index_template/logs-servers-audit
 {
-  "index_patterns": ["logs-servers-audit-*"],
+  "index_patterns": ["logs-servers-audit*"],
   "data_stream": { },
   "priority": 200,
   "template": {
