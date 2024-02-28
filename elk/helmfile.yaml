@@ -1,0 +1,48 @@
+helmDefaults:
+  kubeContext: k3d-play
+  atomic: false
+  wait: false
+
+repositories:
+  - name: elastic
+    url: https://helm.elastic.co
+
+releases:
+  - name: elasticsearch
+    namespace: elasticsearch
+    chart: elastic/elasticsearch
+    version: 8.5.x
+    values:
+      - imageTag: "8.12.2"
+
+  - name: kibana
+    namespace: elasticsearch
+    chart: elastic/kibana
+    version: 8.5.x
+    values:
+      - imageTag: "8.12.2"
+
+  - name: filebeat
+    namespace: elasticsearch
+    chart: elastic/filebeat
+    version: 8.5.x
+    values:
+      - filebeat.yaml
+
+  - name: logstash
+    namespace: elasticsearch
+    chart: elastic/logstash
+    version: 8.5.x
+    labels:
+      ilm: true
+    values:
+      - logstash-ilm.yaml
+
+  - name: logstash
+    namespace: elasticsearch
+    chart: elastic/logstash
+    version: 8.5.x
+    labels:
+      dsl: true
+    values:
+      - logstash-dsl.yaml
