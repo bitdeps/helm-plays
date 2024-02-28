@@ -17,8 +17,9 @@ This play focus is on logstash configuration. ILM serves for task such as indexe
 
 * [Logstash elasticsearch output](https://www.elastic.co/guide/en/logstash/current/plugins-outputs-elasticsearch.html)
 
-## Logstash >= 8.8 with ILM
+## Logstash index alias with ILM lifecycle policy (>= 8.8)
 
+**Version** is specifically mentioned since it **affects the configuration parameters**.
 Note it's better to specifically disable `data_stream`.
 
 Main takeaway points:
@@ -48,11 +49,11 @@ output {
 helmfile -l name=logstash -l ilm=true apply
 ```
 
-## Logstash >= 8.8 with data stream
+## Logstash with data stream built-in lifecycle (>= 8.11 preview feature at the moment)
 
 Currently data streams lifecycle is a technology preview feature it [provides settings](https://www.elastic.co/guide/en/elasticsearch/reference/current/data-stream-lifecycle-settings.html) for data retention, rollover and tail merging. It doesn't seem there's shard shrinking option for data stream lifecycle, however data streams can also use [ILM policies](https://www.elastic.co/guide/en/elasticsearch/reference/current/set-up-a-data-stream.html#create-index-lifecycle-policy).
 
-If we don't plan a full HOT-WORM-COLD ILM process with shrinking as well, we should be fine just with the current data stream lifecycle settings.
+If we don't plan a full HOT-WORM-COLD ILM process including shrinking and we are okay with the `cluster.lifecycle.default.rollover` settings, this scenario makes sense.
 
 Before moving on:
   * We should [create and index template for a data stream](https://www.elastic.co/guide/en/elasticsearch/reference/current/tutorial-manage-new-data-stream.html#create-index-template-with-lifecycle). Rollover and retention can be controlled which you can look up in the data stream lifecycle settings provided in the link above. Rollover has already have optimal defaults, so you can set just the retention.
@@ -95,4 +96,17 @@ output {
 
 ```bash
 helmfile -l name=logstash -l dsl=true apply
+```
+
+## Logstash with data stream and ILM lifecycle policy (>= 8.0)
+
+The configuration is not provided the [details can be found here](https://www.elastic.co/guide/en/elasticsearch/reference/8.10/set-up-a-data-stream.html).
+Note that the index template must reference the policy:
+
+```json
+"template": {
+  "settings": {
+    "index.lifecycle.name": "my-lifecycle-policy"
+  }
+}
 ```
