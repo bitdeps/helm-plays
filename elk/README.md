@@ -29,19 +29,19 @@ Main takeaway points:
 * `ilm_rollover_alias` is used instead of `index` when ilm is enabled.
 * `ilm_policy` **custom-ilm** should be created before applying the configuration
 
-```json
-    output {
-      elasticsearch {
-        data_stream => false
-        ilm_enabled => "true"
-        ilm_pattern => "{now/d}-000001"
-        ilm_rollover_alias => "logs-test"
+```ruby
+output {
+  elasticsearch {
+    data_stream => false
+    ilm_enabled => "true"
+    ilm_pattern => "{now/d}-000001"
+    ilm_rollover_alias => "logs-test"
 
-        ilm_policy => "custom-ilm"
-        template_name => "logs-test"
-        action => "create"
-      }
-    }
+    ilm_policy => "custom-ilm"
+    template_name => "logs-test"
+    action => "create"
+  }
+}
 ```
 
 ```bash
@@ -81,16 +81,16 @@ Before moving on:
 
 Now we can point logstash to the desired data stream:
 
-```json
-    output {
-      elasticsearch {
-        data_stream => true
-        data_stream_type => "logs"
-        data_stream_dataset => "servers"
-        data_stream_namespace => "audit"
-        action => "create"
-      }
-    }
+```ruby
+output {
+  elasticsearch {
+    data_stream => true
+    data_stream_type => "logs"
+    data_stream_dataset => "servers"
+    data_stream_namespace => "audit"
+    action => "create"
+  }
+}
 ```
 
 ```bash
