@@ -65,7 +65,7 @@ Before moving on:
 {
   "index_patterns": ["logs-servers-audit*"],
   "data_stream": { },
-  "priority": 200,
+  "priority": 300,
   "template": {
     "settings": {
       "index": { "mapping": { "total_fields": { "limit": "1000" } } }
@@ -100,13 +100,38 @@ helmfile -l name=logstash -l dsl=true apply
 
 ## Logstash with data stream and ILM lifecycle policy (>= 8.0)
 
-The configuration is not provided the [details can be found here](https://www.elastic.co/guide/en/elasticsearch/reference/8.10/set-up-a-data-stream.html).
-Note that the index template must reference the policy:
+The configuration helm values are not provided here. Bellow you will find a sample index template configuration for data stream indexes (for more details [refer to](https://www.elastic.co/guide/en/elasticsearch/reference/8.10/set-up-a-data-stream.html)):
 
-```json
-"template": {
-  "settings": {
-    "index.lifecycle.name": "my-lifecycle-policy"
+```ruby
+# PUT _index_template/logs-servers-audit
+{
+  "index_patterns" : ["logs-servers-audit*"],
+  "data_stream": {},
+  "priority": 300,
+  "composed_of": ["logs-mappings"],
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas" : 1,
+      "index": {
+        "mapping": {
+          "ignore_malformed": "true",
+          "total_fields.limit": "1000"
+        },
+        "query": {
+          "default_field": [
+            "message"
+          ]
+        },
+        "lifecycle": {
+          "name": "logs-62-days",
+          "rollover_alias": "logs-servers-audit"
+        }
+      }
+    }
+  },
+  "_meta": {
+    "description": "Index template for servers audit logs"
   }
 }
 ```
